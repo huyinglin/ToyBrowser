@@ -1,4 +1,5 @@
 const net = require('net');
+const Parser = require('./parser');
 
 class Request {
   // @param method, url = host + port + path
@@ -35,7 +36,8 @@ ${this.bodyText}`;
 
   send(connection) {
     return new Promise((resolve, reject) => {
-      const parser = new ResPonseParser();
+      const parser = new Parser();
+      // const parser = new ResPonseParser();
       if (connection) {
         connection.write(this.toString());
       } else {
@@ -49,8 +51,8 @@ ${this.bodyText}`;
 
       connection.on('data', (data) => {
         parser.receive(data.toString());
-        console.log(parser.statusLine);
-        console.log(parser.headers);
+        console.log(parser.statusLine());
+        console.log(parser.headers());
 
         // resolve(data.toString());
         connection.end();
@@ -109,7 +111,7 @@ class ResPonseParser {
         this.current = this.WATTING_HEADER_SPACE;
       } else if (char === '\r') {
         this.current = this.WATTING_BODY;
- 
+
         this.bodyParser = new TrunkedBodyParser();
       } else {
         this.headerName += char;
