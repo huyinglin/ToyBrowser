@@ -1,5 +1,4 @@
-
-function Parser() {
+function ResPonseParser() {
   let state = wattingStatusLine;
   let statusLine = '';
   let headers = {};
@@ -96,4 +95,4 @@ function Parser() {
   }
 }
 
-module.exports = Parser;
+module.exports = ResPonseParser;

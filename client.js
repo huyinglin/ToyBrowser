@@ -36,8 +36,8 @@ ${this.bodyText}`;
 
   send(connection) {
     return new Promise((resolve, reject) => {
-      const parser = new Parser();
-      // const parser = new ResPonseParser();
+      // const parser = new Parser();
+      const parser = new ResPonseParser();
       if (connection) {
         connection.write(this.toString());
       } else {
@@ -51,8 +51,13 @@ ${this.bodyText}`;
 
       connection.on('data', (data) => {
         parser.receive(data.toString());
-        console.log(parser.statusLine());
-        console.log(parser.headers());
+
+        if (parser.isFinished) {
+          resolve(parser.response);
+        }
+
+        // console.log(parser.statusLine());
+        // console.log(parser.headers());
 
         // resolve(data.toString());
         connection.end();
@@ -86,6 +91,21 @@ class ResPonseParser {
     this.headers = {};
     this.headerName = '';
     this.headerValue = '';
+    this.bodyParser = null;
+  }
+
+  get isFinished() {
+    return this.bodyParser && this.bodyParser.isFinished;
+  }
+
+  get response() {
+    this.statusLine.match(/HTTP\/1.1 ([0-9]+) ([\s\S]+)/);
+    return {
+      statusCode: RegExp.$1,
+      statusText: RegExp.$2,
+      headers: this.headers,
+      body: this.bodyParser.content.join(''),
+    }
   }
 
   receive(string) {
@@ -110,9 +130,10 @@ class ResPonseParser {
       if (char === ':') {
         this.current = this.WATTING_HEADER_SPACE;
       } else if (char === '\r') {
-        this.current = this.WATTING_BODY;
-
-        this.bodyParser = new TrunkedBodyParser();
+        this.current = this.WATTING_HEADER_BLOCK_END;
+        if (this.headers['Transfer-Encoding'] === 'chunked') {
+          this.bodyParser = new TrunkedBodyParser();
+        }
       } else {
         this.headerName += char;
       }
@@ -133,39 +154,95 @@ class ResPonseParser {
       if (char === '\n') {
         this.current = this.WATTING_HEADER_NAME;
       }
+    } else if (this.current === this.WATTING_HEADER_BLOCK_END) {
+      if (char === '\n') {
+        this.current = this.WATTING_BODY;
+      }
+    } else if (this.current === this.WATTING_BODY) {
+      this.bodyParser.receiveChar(char);
     }
   }
 }
 
 class TrunkedBodyParser {
   constructor() {
-    this.WATTING_STATUS_LINE = 0;
-    this.WATTING_STATUS_LINE_END = 1;
-    this.WATTING_HEADER_NAME = 2;
-    this.WATTING_HEADER_VALUE = 3;
-    this.WATTING_HEADER_LINE_END = 4;
+    this.WATTING_LENGTH = 0;
+    this.WATTING_LENGTH_LINE_END = 1;
+    this.READING_TRUNK = 2;
+    this.WATTING_NEW_LINE = 3;
+    this.WATTING_NEW_LINE_END = 4;
 
-    this.WATTING_HEADER_BLOCK_END = 5;
+    this.length = 0;
+    this.content = [];
+    this.isFinished = false;
+    this.current = this.WATTING_LENGTH;
   }
 
-  receive(string) {
+  receiveChar(char) {
+    if (this.current === this.WATTING_LENGTH) {
+      if (char === '\r') {
+        if (this.length === 0) {
+          this.isFinished = true;
+        }
+        this.current = this.WATTING_STATUS_LINE_END;
+      } else {
+        this.length *= 10;
+        this.length += char.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+    } else if (this.current === this.WATTING_STATUS_LINE_END) {
+      if (char === '\n') {
+        this.current = this.READING_TRUNK;
+      }
+    } else if (this.current === this.READING_TRUNK) {
+      this.content.push(char);
+      this.length--;
+      if (this.length === 0) {
+        this.current = this.WATTING_NEW_LINE;
+      }
+    } else if (this.current === this.WATTING_NEW_LINE) {
+      if (char === '\r') {
+        this.current = this.WATTING_NEW_LINE_END;
+      }
+    } else if (this.current === this.WATTING_NEW_LINE_END) {
+      if (char === '\n') {
+        this.current = this.WATTING_LENGTH;
+      }
+    }
 
   }
 }
 
-const request = new Request({
-  method: 'POST',
-  host: '127.0.0.1',
-  port: '8088',
-  headers: {
-    'X-Foo2': 'customed'
-  },
-  body: {
-    name: 'winter'
-  }
-});
+void async function () {
+  const request = new Request({
+    method: 'POST',
+    host: '127.0.0.1',
+    port: '8088',
+    headers: {
+      'X-Foo2': 'customed'
+    },
+    body: {
+      name: 'winter'
+    }
+  });
 
-request.send();
+  const response = await request.send();
+  console.log(response);
+
+}();
+
+// const request = new Request({
+//   method: 'POST',
+//   host: '127.0.0.1',
+//   port: '8088',
+//   headers: {
+//     'X-Foo2': 'customed'
+//   },
+//   body: {
+//     name: 'winter'
+//   }
+// });
+
+// request.send();
 
 // const client = net.createConnection({
 //   host: '127.0.0.1',
