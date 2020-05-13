@@ -74,6 +74,7 @@ class ResPonseParser {
           // identity: 用于指代自身（例如：未经过压缩和修改）。除非特别指明，这个标记始终可以被接受。
           //
           // gzip, chunked: 可以是多个值，多个值之间以逗号分隔
+
           this.bodyParser = new TrunkedBodyParser();
         }
         return this.waitingHeaderBlockEnd;
