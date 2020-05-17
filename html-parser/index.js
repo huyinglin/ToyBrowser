@@ -6,7 +6,6 @@ let currentTextNode = null;
 let stack = [{ type: 'document', children: [] }];
 
 function emit(token) {
-  console.log('--token', token);
   let top = stack[stack.length - 1];
   if (token.type === 'startTag') {
     let element = {
