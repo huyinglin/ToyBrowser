@@ -1,12 +1,54 @@
 const EOF = Symbol('EOF'); // EOF: end of file
 let currentToken = null;
 let currentAttribute = null;
+let currentTextNode = null;
 
 let stack = [{ type: 'document', children: [] }];
 
 function emit(token) {
-  if (token.type !== 'text')
-  console.log(token);
+  console.log('--token', token);
+  let top = stack[stack.length - 1];
+  if (token.type === 'startTag') {
+    let element = {
+      type: 'element',
+      tagName: token.tagName,
+      children: [],
+      attributes: [],
+    };
+
+    for (let p in token) {
+      if (p !== 'type' && p !== 'tagName') {
+        element.attributes.push({
+          name: p,
+          value: token[p],
+        });
+      }
+    }
+
+    top.children.push(element);
+    element.parent = top;
+
+    if (!token.isSelfClosing) {
+      stack.push(element);
+    }
+    currentTextNode = null;
+  } else if (token.type === 'endTag') {
+    if (top.tagName !== token.tagName) {
+      throw new Error("Tag start end doesn't match!");
+    } else {
+      stack.pop();
+    }
+    currentTextNode = null;
+  } else if (token.type === 'text') {
+    if (currentTextNode === null) {
+      currentTextNode = {
+        type: 'text',
+        content: "",
+      };
+      top.children.push(currentTextNode);
+    }
+    currentTextNode.content += token.content;
+  }
 }
 
 function data(c) {
@@ -16,7 +58,7 @@ function data(c) {
     emit({
       type: 'EOF',
     });
-    return; // ? 为什么这里可以直接return，而不是return一个状态？
+    return; // ? 为什么这里可以直接return，而不是return一个状态？ 这里本应该做一些容错处理
   } else {
     emit({
       type: 'text',
