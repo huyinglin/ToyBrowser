@@ -1,6 +1,6 @@
 const net = require('net');
-const SwitchPatternResponseParser = require('./switchPatternResponseParser');
-const EnumPatternResponseParser = require('./enumPatternResponseParser');
+const HTTPParser = require('./http-parser');
+const HTMLParser = require('./html-parser');
 
 class Request {
   // @param method, url = host + port + path
@@ -37,8 +37,7 @@ ${this.bodyText}`;
 
   send(connection) {
     return new Promise((resolve, reject) => {
-      const parser = new SwitchPatternResponseParser();
-      // const parser = new EnumPatternResponseParser();
+      const parser = new HTTPParser();
       if (connection) {
         connection.write(this.toString());
       } else {
@@ -80,7 +79,10 @@ void async function () {
   });
 
   const response = await request.send();
-  console.log(response);
+
+  console.log(response.body);
+
+  let dom = HTMLParser.parseHTML(response.body);
 
 }();
 
