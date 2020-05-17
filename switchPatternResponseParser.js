@@ -151,8 +151,8 @@ class TrunkedBodyParser {
       case '\r':
         return this.waitingStatusLineEnd;
       default:
-        this.length *= 10;
-        this.length += char.charCodeAt(0) - '0'.charCodeAt(0);
+        this.length *= 16;
+        this.length += parseInt(char, 16);
         if (this.length === 0) {
           // 如果下一行的长度为0，表明body结束
           this.isFinished = true;
