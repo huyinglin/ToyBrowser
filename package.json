@@ -1,0 +1,11 @@
+{
+  "name": "ToyBrowser",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/huyinglin/ToyBrowser.git",
+  "author": "huyinglin",
+  "license": "MIT",
+  "dependencies": {
+    "css": "^2.2.4"
+  }
+}
