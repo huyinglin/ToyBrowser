@@ -80,9 +80,11 @@ void async function () {
 
   const response = await request.send();
 
-  console.log(response.body);
+  // console.log(response.body);
 
-  let dom = HTMLParser.parseHTML(response.body);
+  const dom = HTMLParser.parseHTML(response.body);
+
+  console.log(JSON.stringify(dom, null, '    '));
 
 }();
 
