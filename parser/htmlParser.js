@@ -1,4 +1,5 @@
-const { addCSSRules, computeCSS } = require('../css-parser');
+const { addCSSRules, computeCSS } = require('./cssParser');
+const layout = require('../layout');
 
 const EOF = Symbol('EOF'); // EOF: end of file
 let currentToken = null;
@@ -44,6 +45,7 @@ function emit(token) {
         // 处理css
         addCSSRules(top.children[0].content);
       }
+      layout(top); // 为什么在endTag时进行布局？因为要取到元素的子元素后才能布局
       stack.pop();
     }
     currentTextNode = null;

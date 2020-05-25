@@ -1,6 +1,6 @@
 const net = require('net');
-const HTTPParser = require('./http-parser');
-const HTMLParser = require('./html-parser');
+const HTTPParser = require('./parser/http-parser');
+const HTMLParser = require('./parser/htmlParser');
 
 class Request {
   // @param method, url = host + port + path
