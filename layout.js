@@ -1,21 +1,21 @@
 function getStyle(element) {
   if (!element.style) {
     element.style = {};
-
-    for (let prop in element.computedStyle) {
-      const p = element.computedStyle.value;
-      element.style[prop] = element.computedStyle[prop].value;
-
-      if (element.style[prop].toString().match(/px$/)) {
-        element.style[prop] = parseInt(element.style([prop]));
-      }
-      if (element.style[prop].toString().match(/^[0-9\.]+$/)) {
-        element.style[prop] = parseInt(element.style[prop]);
-      }
-    }
-
-    return element.style;
   }
+
+  for (let prop in element.computedStyle) {
+    const p = element.computedStyle.value;
+    element.style[prop] = element.computedStyle[prop].value;
+
+    if (element.style[prop].toString().match(/px$/)) {
+      element.style[prop] = parseInt(element.style[prop]);
+    }
+    if (element.style[prop].toString().match(/^[0-9\.]+$/)) {
+      element.style[prop] = parseInt(element.style[prop]);
+    }
+  }
+
+  return element.style;
 }
 
 function layout(element) {
@@ -199,7 +199,7 @@ function layout(element) {
         flexLine.push(item);
       }
       if (itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0)) {
-        crossSpace = Match.max(crossSpace, itemStyle[crossSize]);
+        crossSpace = Math.max(crossSpace, itemStyle[crossSize]);
       }
       mainSpace -= itemStyle[mainSize];
     }
@@ -218,8 +218,7 @@ function layout(element) {
     const scale = style[mainSize] / (style[mainSize] - mainSpace);
     const currentMain = mainBase;
     for (let i = 0; i < items.length; i++) {
-      const item = item[i];
-      const itemStyle = getStyle(item);
+      const itemStyle = getStyle(item[i]);
 
       if (itemStyle.flex) {
         itemStyle[mainSize] = 0;
@@ -292,7 +291,7 @@ function layout(element) {
 
   // compute the cross axis sizes
   // align-items, align-self
-  let crossSpace;
+  // let crossSpace;
 
   if (!style[crossSize]) { // auto sizing
     crossSpace = 0;
@@ -313,7 +312,6 @@ function layout(element) {
     crossBase = 0;
   }
 
-  let lineSize = style[crossSize] / flexLines.length;
   let step;
 
   if (style.alignContent === 'flex-start') {

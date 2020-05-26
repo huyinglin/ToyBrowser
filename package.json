@@ -6,6 +6,7 @@
   "author": "huyinglin",
   "license": "MIT",
   "dependencies": {
-    "css": "^2.2.4"
+    "css": "^2.2.4",
+    "images": "^3.0.2"
   }
 }

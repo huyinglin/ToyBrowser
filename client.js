@@ -1,6 +1,8 @@
 const net = require('net');
-const HTTPParser = require('./parser/http-parser');
+const HTTPParser = require('./parser/httpParser');
 const HTMLParser = require('./parser/htmlParser');
+const images = require('images');
+const render = require('./render');
 
 class Request {
   // @param method, url = host + port + path
@@ -84,8 +86,11 @@ void async function () {
 
   const dom = HTMLParser.parseHTML(response.body);
 
-  console.log(JSON.stringify(dom, null, '    '));
+  const viewport = images(800, 600);
 
+  render(viewport, dom);
+
+  viewport.save('viewport.jpg');
 }();
 
 // const request = new Request({
