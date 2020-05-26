@@ -237,12 +237,9 @@ function layout(element) {
       const mainSpace = items.mainSpace;
       let flexTotal = 0;
       for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        const itemStyle = getStyle(item);
-
+        const itemStyle = getStyle(items[i]);
         if (itemStyle.flex !== null && itemStyle.flex !== (void 0)) {
           flexTotal += itemStyle.flex;
-          continue;
         }
       }
 
@@ -250,8 +247,7 @@ function layout(element) {
         // There is flexible flex items
         let currentMain = mainBase;
         for (let i = 0; i < items.length; i++) {
-          const item = items[i];
-          const itemStyle = getStyle(item);
+          const itemStyle = getStyle(items[i]);
 
           if (itemStyle.flex) {
             itemStyle[mainSize] = (mainSpace / flexTotal) * itemStyle.flex;
@@ -285,8 +281,8 @@ function layout(element) {
           currentMain = step / 2 + mainBase;
         }
         for (let i = 0; i < items.length; i++) {
-          const item = items[i];
-          itemStyle[mainStart, currentMain]; // ?
+          const itemStyle = getStyle(items[i]);
+          itemStyle[mainStart] = currentMain;
           itemStyle[mainEnd] = itemStyle[mainStart] + mainSign * itemStyle[mainSize];
           currentMain = itemStyle[mainEnd] + step;
         }
