@@ -147,10 +147,10 @@ function computeCSS(element, stack) {
         if (!computedStyle[declaration.property]) {
           computedStyle[declaration.property] = {};
         }
-        if (!computedStyle[declaration.property].specificity) {
-          computedStyle[declaration.property].value = declaration.value;
-          computedStyle[declaration.property].specificity = sp;
-        } else if (compara(computedStyle[declaration.property].specificity, sp) < 0) {
+        if (
+          !computedStyle[declaration.property].specificity ||
+          compara(computedStyle[declaration.property].specificity, sp) < 0
+        ) {
           computedStyle[declaration.property].value = declaration.value;
           computedStyle[declaration.property].specificity = sp;
         }
