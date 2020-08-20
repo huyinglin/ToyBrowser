@@ -8,7 +8,7 @@ ToyBrowser 是一个玩具版的浏览器，它以 Toy 版的方式实现了浏�
 - HTML 的解析
 - DOM 树的生成
 - CSS 的计算
-- 布局
+- Flex 布局
 
 ## Explain
 
