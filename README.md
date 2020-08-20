@@ -30,9 +30,12 @@ cssParser.js 中实现了 CSS 规则收集和计算。通过 css 这个库解析
 ### layout.js
 layout.js 实现了基本的 Flex 布局功能。flex-grow、flex-shrink、flex-basis 等特性还未实现。
 
+### viewport.jpg
+viewport.jpg 是渲染后输出的图片。
+
 ## Dependencies
-- css -- 将 CSS 字符串解析成 AST 对象。
-- images -- 通过指令可画出图形并输出成图片。
+- css: 将 CSS 字符串解析成 AST 对象
+- images: 通过指令可画出图形并输出成图片
 
 ## Link
 下面链接中的文章是浏览器相关的总结
